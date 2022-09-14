@@ -5,6 +5,67 @@
 (define-struct widget(name quantity time price parts))
 ;; a widget is a (make-widget String Natural Natural Number (listof widget))
 
+;; template
+#;
+(define (fn-for-widget--widget w)
+  (...(widget-name w)
+      (widget-quanity w)
+      (widget-time w)
+      (widget-price w)
+      (fn-for-widget--low (widget-parts w))))
+(define (fn-for-widget--low low)
+  (cond [(empty? low) (...)]
+        [else
+         (... (fn-for-widget--widget (first low))
+              (fn-for-widget--low (rest low)))]))
+
+;; Widget Natural -> ListOfWidget
+;; ListOfWidget Natural -> ListOfWidget
+;; Examines the widget and sub widgets, and returns those with a name of length longer than inputted natural
+(check-expect (find-widget-name-longer-than Wire 2) (list Wire))
+(check-expect (find-widget-name-longer-than Cord 2) (list Cord Wire))
+(check-expect (find-widget-name-longer-than Numbers 20) empty)
+(check-expect (find-widget-name-longer-than--low (widget-parts Cord) 2) (list Wire))
+
+;(define (find-widget-name-longer-than low length) empty) ;stub
+;(define (find-widget-name-longer-than--low low length) empty)
+
+(define (find-widget-name-longer-than w length)
+  (if (> (string-length (widget-name w)) length)
+      (cons w 
+      (find-widget-name-longer-than--low (widget-parts w) length))
+      (find-widget-name-longer-than--low (widget-parts w) length)))
+
+(define (find-widget-name-longer-than--low low length)
+  (cond [(empty? low) empty]
+        [else
+         (append (find-widget-name-longer-than (first low) length)
+              (find-widget-name-longer-than--low (rest low) length))]))
+
+;; Widget Natural -> ListOfWidget
+;; Returns widgets and subwidgets whose quantities are greater than the inputted natural
+(check-expect (find-widget-quantity-over Wire 2) (list Wire))
+(check-expect (find-widget-quantity-over Cord 2) (list Cord Wire))
+(check-expect (find-widget-quantity-over Cord 10) empty)
+(check-expect (find-widget-quantity-over--low (widget-parts Cord) 1) (list Wire))
+              
+              
+;(define (find-widget-quantity-over w quan) empty)
+;(define (find-widget-quantity-over--low low quan) empty)  
+
+(define (find-widget-name-longer-than w length)
+  (if (> (string-length (widget-name w)) length)
+      (cons w 
+      (find-widget-name-longer-than--low (widget-parts w) length))
+      (find-widget-name-longer-than--low (widget-parts w) length)))
+
+(define (find-widget-name-longer-than--low low length)
+  (cond [(empty? low) empty]
+        [else
+         (append (find-widget-name-longer-than (first low) length)
+              (find-widget-name-longer-than--low (rest low) length))]))                                    
+
+
 ;; here is one hierarchy of Widgets used to make a telephone
 (define Wire (make-widget "Wire" 3 5 5 empty))
 (define Cord (make-widget "Cord" 9 8 5 (list Wire)))
