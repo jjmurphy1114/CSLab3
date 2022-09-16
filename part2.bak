@@ -42,7 +42,6 @@
 ;;===========================================
 ;; PART 2
 ;; Encapsulated template
-#;
 (define (fn-for-widget w)
   (local [(define (fn-for-widget--widget w)
             (...(widget-name w)
@@ -87,18 +86,17 @@
 ;; Widget (Widget -> Boolean) Y Y -> (listof Widget)
 ;; Consumes a widget, function which produces a boolean, and two other parameters, then returns a list
 ;; of widgets and subwidgets which cause the fn to return true
-(check-expect (fn-for-widget Wire (λ (w) (true? (> (widget-price w) 1)))) (list Wire))
 
-(define (fn-for-widget w fn?)
+(define (fn-for-widget w fn cond1 cond2)
   (local [(define (fn-for-widget--widget w)
-            (if fn?
-             (cons w (fn-for-widget--low (widget-parts w)))
-                   (fn-for-widget--low (widget-parts w))))
+            (...(widget-name w)
+                (widget-quanity w)
+                (widget-time w)
+                (widget-price w)
+                (fn-for-widget--low (widget-parts w))))
           (define (fn-for-widget--low low)
-            (cond [(empty? low) empty]
+            (cond [(empty? low) (...)]
                   [else
-                   (append (fn-for-widget--widget (first low))
+                   (... (fn-for-widget--widget (first low))
                         (fn-for-widget--low (rest low)))]))]
     (fn-for-widget--widget w)))
-
-
