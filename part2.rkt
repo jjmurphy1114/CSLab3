@@ -79,25 +79,28 @@
 
 ;; Widget Natural Natural -> (listof Widget)
 ;; Consumes a widget, a name length, and a number of parts, then returns a list of widget and
-;; subwidgets with a name longer than the length and with a num parts greater than parts
-(check-expect (find-widgets-tough-advertise Wire 10 10) (list Wire))
-(check-expect (find-widgets-tough-advertise Wire 1 10) empty)
-(check-expect (find-widgets-tough-advertise Wire 10 0) empty)
+;; subwidgets with a name longer than the char and with a num parts greater than parts
 (check-expect (find-widgets-tough-advertise Wire 1 0) empty)
-(check-expect (find-widgets-tough-advertise Cord 10 3) (list Cord Wire))
-(check-expect (find-widgets-tough-advertise Cord 1 1) (list Wire))
-(check-expect (find-widgets-tough-advertise Jewlery 10 4) (list Jewelry Ring Necklace Bracelet))
-(check-expect (find-widgets-tough-advertise Jewlery 5 4) (list Ring))
+(check-expect (find-widgets-tough-advertise Cord 1 10) empty)
+(check-expect (find-widgets-tough-advertise Wire 10 10) empty)
+(check-expect (find-widgets-tough-advertise Cord 1 0) (list Cord))
+(check-expect (find-widgets-tough-advertise Jewelry 6 0)
+              (list Jewelry Necklace Bracelet))
+(check-expect (find-widgets-tough-advertise Jewelry 1 0)
+              (list Jewelry Necklace Bracelet Beads))
 
-;(define (find-widgets-tough-advertise length parts) empty)
+;(define (find-widgets-tough-advertise char parts) empty)
 
 ;; For "Third"
 ;; !!!
-(define (find-widgets-tough-advertise length parts)
+(define (find-widgets-tough-advertise w char parts)
   (local [(define (tough? w)
-            (and (> (string-length (widget-name w)) length)
-                 (> (num-parts w 0) parts)))
-          (define (num-parts w acc))
+            (and (> (string-length (widget-name w)) char)
+                 (> (num-parts w) parts)))
+          (define (num-parts w)
+            (- (length (fn-for-widget w (λ (w) (not (empty? w))))) 1))]
+    ;;Subtract 1 from length of list because the widget does not count as a part
+    (fn-for-widget w tough?)))
 
 ;; Widget (Widget -> Boolean) -> (listof Widget)
 ;; Consumes a widget and a function which consumes a widget and produces a boolean, then returns a 
