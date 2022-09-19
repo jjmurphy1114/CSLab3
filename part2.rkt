@@ -91,8 +91,7 @@
 
 ;(define (find-widgets-tough-advertise char parts) empty)
 
-;; For "Third"
-;; !!!
+
 (define (find-widgets-tough-advertise w char parts)
   (local [(define (tough? w)
             (and (> (string-length (widget-name w)) char)

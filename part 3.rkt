@@ -63,8 +63,9 @@
 ;Part 3
 
 
-;Signature: (X X -> Boolean) X -> ((listof X) -> (listof X))
-;Purpose: Sorts given field of widget based on comparison function fn?
+;; Signature: (X X -> Boolean) X -> ((listof X) -> (listof X))
+;; Purpose: Returns a function that sorts a given widget and its subwidgets based on given comparison
+;; fn and field
  
 
 (define (qsort fn? field)
@@ -88,10 +89,47 @@
     (qsort-list (make-low w)))))
 
 ;; Widget -> (listof Widget)
-;;Turns a widget into a list of the widget and all subwidgets
+;; Turns a widget into a list of the widget and all subwidgets
 (define (make-low w)
        (fn-for-widget w (λ (w) (not (empty? w)))))
 
-(define sort-strings (qsort string<? widget-name))
+;; Widget -> (listof Widget)
+;; Sorts widgets and subwidgets in alphabetical order based on their name
 (check-expect (sort-strings Telephone) (list Buttons Cord Numbers Receiver Telephone Wire))
+(check-expect (sort-strings Wire) (list Wire))
+
+(define sort-strings (qsort string<? widget-name))
+
+;; Widget -> (listof Widget)
+;; Sorts widgets and subwidgets in decreasing order based on quantity
+(check-expect (sort-overstocked Necklace) (list Necklace Chain Pendant))
+(check-expect (sort-strings Wire) (list Wire))
+
+(define sort-overstocked (qsort > widget-quantity))
+
+;; X (X -> Y) (Y Y -> Boolean) -> X
+;; Consumes a widget, function for field of widget, and comparison function, then creates a list
+;; of that widget and sub widgets, and returns the widget that has the max/min value when each item in
+;; list is compared to the rest of the list
+(check-expect (find-extreme Telephone widget-name string>?) Wire)
+(check-expect (find-extreme Wire widget-quantity >) Wire)
+(check-expect (find-extreme Jewelry widget-price <) Chain)
+(check-expect (find-extreme Jewelry widget-price >) Jewelry)
+
+(define (find-extreme w field fn?)
+  (local [(define (find-extreme-low low acc)
+ ;acc: widget from low that has the max/min field when run against comparison fn
+ ;if element > acc, that element is set to acc in the recursive call           
+            (cond [(empty? low) acc]
+ ;after entire list has been iterated through, acc is returned
+                  [else
+                   (if (fn? (field (first low)) (field acc))
+                   (find-extreme-low (rest low) (first low))
+                   (find-extreme-low (rest low) acc))]))]
+    (find-extreme-low (make-low w) (first (make-low w)))))
+;acc is initialized as the first widget in the list
+         
+         
+
+
 
