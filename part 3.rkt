@@ -67,12 +67,10 @@
 ;Purpose: Sorts given field of widget based on comparison function fn?
  
 
-(define (qsort w fn? field)
-  (local
-    [(define (make-low w)
-       (fn-for-widget w (λ (w) (not (empty? w)))))
-     (define low (make-low w))
-     (define (qsort-list low)
+(define (qsort fn? field)
+  (λ (w)
+    (local
+      [(define (qsort-list low)
        (cond
          [(empty? low) empty]
          [else 
@@ -87,6 +85,13 @@
                               (not (smaller? x)))
                             ;; ^^^ invert the smaller? function
                             (rest low)))))]))]
-    (qsort-list (make-low w))))
-(define sort-strings (qsort Telephone string<? widget-name))
+    (qsort-list (make-low w)))))
+
+;; Widget -> (listof Widget)
+;;Turns a widget into a list of the widget and all subwidgets
+(define (make-low w)
+       (fn-for-widget w (λ (w) (not (empty? w)))))
+
+(define sort-strings (qsort string<? widget-name))
+(check-expect (sort-strings Telephone) (list Buttons Cord Numbers Receiver Telephone Wire))
 
